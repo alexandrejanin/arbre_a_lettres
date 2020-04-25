@@ -59,6 +59,7 @@ class _TreePageState extends State<TreePage> {
         child: TreeNode(
           key: ValueKey(_letter),
           letter: _letter,
+          deletable: false,
         ),
       ),
     );

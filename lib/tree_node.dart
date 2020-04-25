@@ -9,8 +9,10 @@ import 'package:intl/intl.dart';
 
 class TreeNode extends StatefulWidget {
   final Letter letter;
+  final bool deletable;
 
-  const TreeNode({Key key, @required this.letter}) : super(key: key);
+  const TreeNode({Key key, @required this.letter, this.deletable = true})
+      : super(key: key);
 
   @override
   _TreeNodeState createState() => _TreeNodeState();
@@ -90,6 +92,7 @@ class _TreeNodeState extends State<TreeNode> {
           ),
         LetterBox(
           letter: widget.letter,
+          deletable: widget.deletable,
         ),
         Container(
           width: 4,
@@ -103,8 +106,9 @@ class _TreeNodeState extends State<TreeNode> {
 
 class LetterBox extends StatefulWidget {
   final Letter letter;
+  final bool deletable;
 
-  const LetterBox({Key key, @required this.letter}) : super(key: key);
+  const LetterBox({Key key, @required this.letter, this.deletable=true}) : super(key: key);
 
   @override
   _LetterBoxState createState() => _LetterBoxState();
@@ -131,7 +135,7 @@ class _LetterBoxState extends State<LetterBox> {
         });
       },
       onLongPress: () {
-        if (_expanded)
+        if (_expanded && widget.deletable)
           setState(() {
             _deleteMode = true;
           });
