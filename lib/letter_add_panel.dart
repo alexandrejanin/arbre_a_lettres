@@ -32,7 +32,7 @@ class _LetterAddPanelState extends State<LetterAddPanel> {
           width: 400,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Color(0xFFDBFFDB),
             borderRadius: BorderRadius.circular(15),
           ),
           child: Column(
@@ -41,7 +41,7 @@ class _LetterAddPanelState extends State<LetterAddPanel> {
               Text(
                 'Écrire une réponse',
                 style: TextStyle(
-                  color: Colors.blue,
+                  color: Color(0xFF23AE26),
                   fontWeight: FontWeight.bold,
                   fontSize: 20,
                 ),
@@ -50,6 +50,7 @@ class _LetterAddPanelState extends State<LetterAddPanel> {
               TextField(
                 controller: _title,
                 maxLines: 1,
+                maxLength: 50,
                 decoration: InputDecoration(
                   isDense: true,
                   hintText: 'Titre',
@@ -83,7 +84,7 @@ class _LetterAddPanelState extends State<LetterAddPanel> {
                 child: Text(
                   'Envoyer',
                   style: TextStyle(
-                    color: Colors.blue,
+                    color: Color(0xFF23AE26),
                     fontWeight: FontWeight.bold,
                   ),
                 ),

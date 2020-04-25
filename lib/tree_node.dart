@@ -54,7 +54,7 @@ class _TreeNodeState extends State<TreeNode> {
           child: LetterBox(
             letter: widget.letter,
             expanded: _expanded,
-            onTap: () async {
+            onTapReply: () async {
               final newLetter = await showDialog(
                 context: context,
                 builder: (context) => LetterAddPanel(
@@ -77,13 +77,13 @@ class _TreeNodeState extends State<TreeNode> {
 class LetterBox extends StatelessWidget {
   final Letter letter;
   final bool expanded;
-  final void Function() onTap;
+  final void Function() onTapReply;
 
   const LetterBox({
     Key key,
     @required this.letter,
     @required this.expanded,
-    this.onTap,
+    this.onTapReply,
   }) : super(key: key);
 
   @override
@@ -92,7 +92,7 @@ class LetterBox extends StatelessWidget {
       curve: Curves.ease,
       duration: const Duration(milliseconds: 500),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Color(0xFFDBFFDB),
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
@@ -111,7 +111,7 @@ class LetterBox extends StatelessWidget {
               padding: const EdgeInsets.all(8),
               alignment: Alignment.centerLeft,
               decoration: BoxDecoration(
-                color: Colors.blue,
+                color: Color(0xFF23AE26),
                 borderRadius: BorderRadius.vertical(
                   top: Radius.circular(15),
                   bottom: Radius.circular(expanded ? 0 : 15),
@@ -122,12 +122,15 @@ class LetterBox extends StatelessWidget {
                       Icons.email,
                       color: Colors.white,
                     )
-                  : Text(
-                      letter.title,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                  : ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: 300),
+                      child: Text(
+                        letter.title,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
             ),
@@ -157,13 +160,13 @@ class LetterBox extends StatelessWidget {
                     ),
                   ),
                   Button(
-                    onTap: onTap,
+                    onTap: onTapReply,
                     child: Padding(
                       padding: const EdgeInsets.all(8),
                       child: Text(
                         'Répondre',
                         style: TextStyle(
-                          color: Colors.blue,
+                          color: Color(0xFF23AE26),
                           fontWeight: FontWeight.bold,
                         ),
                       ),

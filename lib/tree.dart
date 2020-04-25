@@ -11,6 +11,7 @@ class TreePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
+      color: Color(0xFF87CEEB),
       child: SingleChildScrollView(
         reverse: true,
         padding: const EdgeInsets.all(50),

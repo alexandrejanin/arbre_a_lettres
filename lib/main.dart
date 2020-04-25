@@ -12,8 +12,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+        primaryColor: Color(0xFF23AE26),
       ),
       home: TreePage(
         letter: Letter(
@@ -33,7 +32,8 @@ class MyApp extends StatelessWidget {
               children: [
                 Letter(
                   date: DateTime.now(),
-                  title: 'Troisième réponse',
+                  title:
+                      'Troisième réponse',
                   text: 'Ceci est la troisième réponse',
                 ),
               ],
