@@ -18,9 +18,24 @@
     <link rel="manifest" href="manifest.json">
 </head>
 <body id="app-container">
-<!-- This script installs service_worker.js to provide PWA functionality to
-     application. For more information, see:
-     https://developers.google.com/web/fundamentals/primers/service-workers -->
+<script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-analytics.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-firestore.js"></script>
+<script>
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDEAp6I0RhIdR822ciYOmyE_q_iylWVt_Y",
+        authDomain: "arbre-a-lettres.firebaseapp.com",
+        databaseURL: "https://arbre-a-lettres.firebaseio.com",
+        projectId: "arbre-a-lettres",
+        storageBucket: "arbre-a-lettres.appspot.com",
+        messagingSenderId: "1051609318156",
+        appId: "1:1051609318156:web:f4c13a0095301f4848bf29",
+        measurementId: "G-B5Z6P48T4E"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+</script>
 <script>
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', function () {

@@ -68,18 +68,12 @@ class _LetterAddPanelState extends State<LetterAddPanel> {
               ),
               SizedBox(height: 16),
               Button(
-                onTap: () {
-                  if (_title.text.length > 0 || _text.text.length > 0)
-                    Navigator.pop(
-                      context,
-                      Letter(
-                        title: _title.text.length > 0 ? _title.text : null,
-                        text: _text.text,
-                        date: DateTime.now(),
-                      ),
-                    );
-                  else
-                    Navigator.pop(context);
+                onTap: () async {
+                  if (_text.text.trim().length <= 0) return;
+
+                  widget.parent.addChild(title: _title.text, text: _text.text);
+
+                  Navigator.pop(context);
                 },
                 child: Text(
                   'Envoyer',

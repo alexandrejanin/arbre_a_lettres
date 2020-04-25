@@ -1,5 +1,6 @@
+import 'dart:async';
+
 import 'package:arbre_a_lettres/button.dart';
-import 'package:arbre_a_lettres/hand_cursor.dart';
 import 'package:arbre_a_lettres/letter.dart';
 import 'package:arbre_a_lettres/letter_add_panel.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,22 +9,28 @@ import 'package:intl/intl.dart';
 
 class TreeNode extends StatefulWidget {
   final Letter letter;
-  final bool showChildren;
 
-  const TreeNode({Key key, @required this.letter, this.showChildren = true})
-      : super(key: key);
+  const TreeNode({Key key, @required this.letter}) : super(key: key);
 
   @override
   _TreeNodeState createState() => _TreeNodeState();
 }
 
 class _TreeNodeState extends State<TreeNode> {
-  bool _expanded;
+  StreamSubscription _subscription;
 
   @override
   void initState() {
     super.initState();
-    _expanded = false;
+    _subscription = widget.letter.onUpdate.listen(
+      (letter) => setState(() {}),
+    );
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
   }
 
   @override
@@ -31,7 +38,7 @@ class _TreeNodeState extends State<TreeNode> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (widget.showChildren && widget.letter.children.isNotEmpty)
+        if (widget.letter.children != null && widget.letter.children.isNotEmpty)
           Row(
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -49,6 +56,7 @@ class _TreeNodeState extends State<TreeNode> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 8),
                         child: TreeNode(
+                          key: ValueKey(child),
                           letter: child,
                         ),
                       ),
@@ -74,33 +82,14 @@ class _TreeNodeState extends State<TreeNode> {
                 ),
             ],
           ),
-        if (widget.showChildren && widget.letter.children.isNotEmpty)
+        if (widget.letter.children != null && widget.letter.children.isNotEmpty)
           Container(
             width: 4,
             height: 20,
             color: Colors.brown,
           ),
-        GestureDetector(
-          onTap: () => setState(() {
-            _expanded = !_expanded;
-          }),
-          child: LetterBox(
-            letter: widget.letter,
-            expanded: _expanded,
-            onTapReply: () async {
-              final newLetter = await showDialog(
-                context: context,
-                builder: (context) => LetterAddPanel(
-                  parent: widget.letter,
-                ),
-              );
-
-              if (newLetter != null)
-                setState(() {
-                  widget.letter.children.add(newLetter);
-                });
-            },
-          ),
+        LetterBox(
+          letter: widget.letter,
         ),
         Container(
           width: 4,
@@ -112,21 +101,41 @@ class _TreeNodeState extends State<TreeNode> {
   }
 }
 
-class LetterBox extends StatelessWidget {
+class LetterBox extends StatefulWidget {
   final Letter letter;
-  final bool expanded;
-  final void Function() onTapReply;
 
-  const LetterBox({
-    Key key,
-    @required this.letter,
-    @required this.expanded,
-    this.onTapReply,
-  }) : super(key: key);
+  const LetterBox({Key key, @required this.letter}) : super(key: key);
+
+  @override
+  _LetterBoxState createState() => _LetterBoxState();
+}
+
+class _LetterBoxState extends State<LetterBox> {
+  bool _expanded;
+  bool _deleteMode;
+
+  @override
+  void initState() {
+    super.initState();
+    _expanded = false;
+    _deleteMode = false;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return HandCursor(
+    return Button(
+      onTap: () {
+        setState(() {
+          _expanded = !_expanded;
+          _deleteMode = false;
+        });
+      },
+      onLongPress: () {
+        if (_expanded)
+          setState(() {
+            _deleteMode = true;
+          });
+      },
       child: Container(
         decoration: BoxDecoration(
           color: Color(0xFFDBFFDB),
@@ -143,61 +152,71 @@ class LetterBox extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(8),
-                alignment: Alignment.centerLeft,
-                decoration: BoxDecoration(
-                  color: Color(0xFF23AE26),
-                  borderRadius: BorderRadius.vertical(
-                    top: Radius.circular(15),
-                    bottom: Radius.circular(expanded ? 0 : 15),
+              if (!_expanded || widget.letter.title.trim().length > 0)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(8),
+                  alignment: Alignment.centerLeft,
+                  decoration: BoxDecoration(
+                    color: Color(0xFF23AE26),
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(15),
+                      bottom: Radius.circular(_expanded ? 0 : 15),
+                    ),
                   ),
+                  child:
+                      widget.letter.title == null || widget.letter.title.isEmpty
+                          ? Icon(
+                              Icons.email,
+                              color: Colors.white,
+                            )
+                          : ConstrainedBox(
+                              constraints: BoxConstraints(maxWidth: 300),
+                              child: Text(
+                                widget.letter.title,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
                 ),
-                child: letter.title == null || letter.title.isEmpty
-                    ? Icon(
-                        Icons.email,
-                        color: Colors.white,
-                      )
-                    : ConstrainedBox(
-                        constraints: BoxConstraints(maxWidth: 300),
-                        child: Text(
-                          letter.title,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-              ),
-              if (expanded) SizedBox(height: 8),
-              if (expanded)
+              if (_expanded) SizedBox(height: 8),
+              if (_expanded)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: ConstrainedBox(
                     constraints: BoxConstraints(maxWidth: 300),
                     child: Text(
-                      letter.text,
+                      widget.letter.text,
                       style: TextStyle(fontSize: 15),
                     ),
                   ),
                 ),
-              if (expanded)
+              if (_expanded)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(8),
                       child: Text(
-                        DateFormat('dd/MM/yyyy hh:mm').format(letter.date),
+                        DateFormat('dd/MM/yyyy hh:mm')
+                            .format(widget.letter.date),
                         style: TextStyle(
                           color: Colors.black54,
                         ),
                       ),
                     ),
                     Button(
-                      onTap: onTapReply,
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => LetterAddPanel(
+                            parent: widget.letter,
+                          ),
+                        );
+                      },
                       child: Padding(
                         padding: const EdgeInsets.all(8),
                         child: Text(
@@ -211,6 +230,84 @@ class LetterBox extends StatelessWidget {
                     ),
                   ],
                 ),
+              if (_deleteMode)
+                Button(
+                  onTap: () async {
+                    final bool result = await showDialog(
+                      context: context,
+                      builder: (context) => DeleteDialogue(),
+                    );
+                    if (result != null && result) {
+                      widget.letter.delete();
+                    }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Text(
+                      'Supprimer',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class DeleteDialogue extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Material(
+        color: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Color(0xFFDBFFDB),
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Voulez-vous vraiment supprimer ce message ?',
+                style: TextStyle(
+                  fontSize: 18,
+                ),
+              ),
+              SizedBox(height: 16),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Button(
+                    onTap: () => Navigator.pop(context, false),
+                    child: Text(
+                      'Non',
+                      style: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 16),
+                  Button(
+                    onTap: () => Navigator.pop(context, true),
+                    child: Text(
+                      'Oui',
+                      style: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                ],
+              )
             ],
           ),
         ),

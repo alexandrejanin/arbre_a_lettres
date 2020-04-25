@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 class Button extends StatelessWidget {
   final Widget child;
   final void Function() onTap;
+  final void Function() onLongPress;
 
-  const Button({Key key, this.onTap, this.child}) : super(key: key);
+  const Button({Key key, this.child, this.onTap, this.onLongPress})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +16,7 @@ class Button extends StatelessWidget {
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: onTap,
+        onLongPress: onLongPress,
         child: child,
       ),
     );
