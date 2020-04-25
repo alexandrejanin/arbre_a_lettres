@@ -14,7 +14,6 @@ class TreePage extends StatelessWidget {
       color: Color(0xFF87CEEB),
       child: SingleChildScrollView(
         reverse: true,
-        padding: const EdgeInsets.all(50),
         physics: BouncingScrollPhysics(
           parent: AlwaysScrollableScrollPhysics(),
         ),

@@ -1,4 +1,5 @@
 import 'package:arbre_a_lettres/button.dart';
+import 'package:arbre_a_lettres/hand_cursor.dart';
 import 'package:arbre_a_lettres/letter.dart';
 import 'package:arbre_a_lettres/letter_add_panel.dart';
 import 'package:flutter/cupertino.dart';
@@ -31,21 +32,53 @@ class _TreeNodeState extends State<TreeNode> {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (widget.showChildren && widget.letter.children.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 50),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                for (final child in widget.letter.children)
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TreeNode(
-                      letter: child,
-                    ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              for (final child in widget.letter.children)
+                IntrinsicWidth(
+                  child: Column(
+                    crossAxisAlignment: widget.letter.children.first == child
+                        ? CrossAxisAlignment.end
+                        : widget.letter.children.last == child
+                            ? CrossAxisAlignment.start
+                            : CrossAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: TreeNode(
+                          letter: child,
+                        ),
+                      ),
+                      if (widget.letter.children.length > 1)
+                        FractionallySizedBox(
+                          widthFactor: widget.letter.children.first == child ||
+                                  widget.letter.children.last == child
+                              ? 0.5
+                              : 1.0,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: Colors.brown,
+                                  width: 4,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
-              ],
-            ),
+                ),
+            ],
+          ),
+        if (widget.showChildren && widget.letter.children.isNotEmpty)
+          Container(
+            width: 4,
+            height: 20,
+            color: Colors.brown,
           ),
         GestureDetector(
           onTap: () => setState(() {
@@ -69,6 +102,11 @@ class _TreeNodeState extends State<TreeNode> {
             },
           ),
         ),
+        Container(
+          width: 4,
+          height: 20,
+          color: Colors.brown,
+        ),
       ],
     );
   }
@@ -88,93 +126,93 @@ class LetterBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      curve: Curves.ease,
-      duration: const Duration(milliseconds: 500),
-      decoration: BoxDecoration(
-        color: Color(0xFFDBFFDB),
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 5,
-            color: Colors.black26,
-          ),
-        ],
-      ),
-      child: IntrinsicWidth(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(8),
-              alignment: Alignment.centerLeft,
-              decoration: BoxDecoration(
-                color: Color(0xFF23AE26),
-                borderRadius: BorderRadius.vertical(
-                  top: Radius.circular(15),
-                  bottom: Radius.circular(expanded ? 0 : 15),
+    return HandCursor(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Color(0xFFDBFFDB),
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              blurRadius: 5,
+              color: Colors.black26,
+            ),
+          ],
+        ),
+        child: IntrinsicWidth(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(8),
+                alignment: Alignment.centerLeft,
+                decoration: BoxDecoration(
+                  color: Color(0xFF23AE26),
+                  borderRadius: BorderRadius.vertical(
+                    top: Radius.circular(15),
+                    bottom: Radius.circular(expanded ? 0 : 15),
+                  ),
                 ),
-              ),
-              child: letter.title == null || letter.title.isEmpty
-                  ? Icon(
-                      Icons.email,
-                      color: Colors.white,
-                    )
-                  : ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: 300),
-                      child: Text(
-                        letter.title,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                child: letter.title == null || letter.title.isEmpty
+                    ? Icon(
+                        Icons.email,
+                        color: Colors.white,
+                      )
+                    : ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: 300),
+                        child: Text(
+                          letter.title,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
+              ),
+              if (expanded) SizedBox(height: 8),
+              if (expanded)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: 300),
+                    child: Text(
+                      letter.text,
+                      style: TextStyle(fontSize: 15),
                     ),
-            ),
-            if (expanded) SizedBox(height: 8),
-            if (expanded)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(maxWidth: 300),
-                  child: Text(
-                    letter.text,
-                    style: TextStyle(fontSize: 15),
                   ),
                 ),
-              ),
-            if (expanded)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Text(
-                      DateFormat('dd/MM/yyyy hh:mm').format(letter.date),
-                      style: TextStyle(
-                        color: Colors.black54,
-                      ),
-                    ),
-                  ),
-                  Button(
-                    onTap: onTapReply,
-                    child: Padding(
+              if (expanded)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
                       padding: const EdgeInsets.all(8),
                       child: Text(
-                        'Répondre',
+                        DateFormat('dd/MM/yyyy hh:mm').format(letter.date),
                         style: TextStyle(
-                          color: Color(0xFF23AE26),
-                          fontWeight: FontWeight.bold,
+                          color: Colors.black54,
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-          ],
+                    Button(
+                      onTap: onTapReply,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Text(
+                          'Répondre',
+                          style: TextStyle(
+                            color: Color(0xFF23AE26),
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+            ],
+          ),
         ),
       ),
     );
