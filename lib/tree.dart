@@ -44,23 +44,34 @@ class _TreePageState extends State<TreePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (_letter == null)
-      return Material(
-        color: Color(0xFF87CEEB),
-      );
-
     return Material(
       color: Color(0xFF87CEEB),
-      child: SingleChildScrollView(
-        reverse: true,
-        physics: BouncingScrollPhysics(
-          parent: AlwaysScrollableScrollPhysics(),
-        ),
-        child: TreeNode(
-          key: ValueKey(_letter),
-          letter: _letter,
-          deletable: false,
-        ),
+      child: Stack(
+        children: [
+          if (_letter != null)
+            Positioned.fill(
+              child: SingleChildScrollView(
+                reverse: true,
+                physics: BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
+                ),
+                child: TreeNode(
+                  key: ValueKey(_letter),
+                  letter: _letter,
+                  deletable: false,
+                ),
+              ),
+            ),
+          Positioned(
+            top: 20,
+            left: 20,
+            child: Image.asset(
+              'assets/logo.png',
+              width: 100,
+              height: 100,
+            ),
+          ),
+        ],
       ),
     );
   }
