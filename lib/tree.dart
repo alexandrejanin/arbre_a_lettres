@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:arbre_a_lettres/button.dart';
 import 'package:arbre_a_lettres/letter.dart';
 import 'package:arbre_a_lettres/tree_node.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TreePage extends StatefulWidget {
   @override
@@ -65,10 +67,13 @@ class _TreePageState extends State<TreePage> {
           Positioned(
             top: 20,
             left: 20,
-            child: Image.asset(
-              'assets/logo.png',
-              width: 100,
-              height: 100,
+            child: Button(
+              onTap: () => launch('https://feelinggood.glitch.me/arbre.html'),
+              child: Image.asset(
+                'assets/logo.png',
+                width: 100,
+                height: 100,
+              ),
             ),
           ),
         ],
